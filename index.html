@@ -48,7 +48,7 @@
     });
     var bar=f.querySelector('.flt-tabbar');
     if(bar) Array.prototype.forEach.call(bar.querySelectorAll('.flt-tab'),function(b){
-      b.classList.toggle('is-current',b.getAttribute('data-page')===page);
+      b.classList.toggle('is-current',b.getAttribute('data-tab')===page);
     });
     current=page;
   }
@@ -146,7 +146,7 @@
         bar.className='flt-tabbar'; bar.setAttribute('aria-label','Pages');
         TABS.forEach(function(tb){
           var btn=document.createElement('button');
-          btn.type='button'; btn.className='flt-tab'; btn.setAttribute('data-page',tb[0]);
+          btn.type='button'; btn.className='flt-tab'; btn.setAttribute('data-tab',tb[0]);
           if(tb[0]==='home'){
             var im=document.createElement('img'); im.alt='Home';
             var bi=document.querySelector('.flt-brand img');
