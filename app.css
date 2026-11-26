@@ -30,3 +30,11 @@ html{scroll-behavior:smooth}html,body,#root{margin:0;min-height:100%}.flt{--crea
   .flt-addon{flex-direction:column;gap:10px}
   .flt-video-credit{margin-top:18px}
 }
+
+
+/* Fixed header + tighter mobile hero (Nov 2026, round 2) */
+.flt{padding-top:64px}
+.flt-nav{position:fixed;top:0;left:0;right:0;z-index:100}
+@media(max-width:700px){
+  .flt-hero{min-height:560px;padding:30px 20px 110px;justify-content:flex-start}
+}
