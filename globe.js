@@ -133,7 +133,7 @@
     var credits = el('details', 'gl-credits');
     var csum = el('summary'), clist = el('ul');
     credits.appendChild(csum); credits.appendChild(clist);
-    root.appendChild(credits);
+    document.body.appendChild(credits);
 
     var pImg = panel.querySelector('.gl-photo img'), pCap = panel.querySelector('.gl-cap'),
       pThumbs = panel.querySelector('.gl-thumbs'), pH = panel.querySelector('h3'),
@@ -169,6 +169,7 @@
       return { lon: d.lon, lat: d.lat, R: Rdest(), ox: ox, oy: oy };
     }
     function fly(m, i, dur) {
+      dur = dur ? Math.round(dur * 0.55) : dur;
       var tg = target(m, i), prevMode = mode;
       if (m === 'dest') { pKey = DEST[i].key; patchFor(pKey); }
       mode = m; sel = m === 'dest' ? i : -1;
@@ -608,7 +609,7 @@
       // intro: arrive from the side, then idle drift
       if (!anim && mode === 'globe' && !drag && !REDUCED) {
         if (!introDone) {
-          var k = clamp((now - t0) / 2600, 0, 1);
+          var k = clamp((now - t0) / 1500, 0, 1);
           st.lon = 31 + (1 - ease(k)) * 70; st.lat = 24 + (1 - ease(k)) * -6;
           if (k >= 1) introDone = true;
         } else if (now - lastInteract > 1500) {
@@ -786,7 +787,7 @@
       var r = stage.getBoundingClientRect();
       var w = Math.round(r.width), h = Math.round(r.height);
       if (!w || !h) return;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       var changed = w !== W || h !== H;
       W = w; H = h;
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
