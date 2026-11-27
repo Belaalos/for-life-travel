@@ -49,3 +49,6 @@ html{scroll-behavior:smooth}html,body,#root{margin:0;min-height:100%}.flt{--crea
   .flt-tab.is-current{background:#f2b84b33;color:var(--ink)}
   .flt-tab.is-current img{box-shadow:0 0 0 2px var(--gold-deep)}
 }
+
+/* round 6 (Nov 27): free-standing notes — restore top gap (the .flt p rule zeroed their margins) and give them their own side padding so text never nears screen edges */
+.flt .flt-addon,.flt .flt-included-note{margin-top:32px;padding-inline:24px}
