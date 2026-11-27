@@ -8,7 +8,7 @@
 <meta property="og:title" content="For Life Travel | Egypt Trips">
 <meta property="og:description" content="Curated trips across Egypt. To Travel is to Live.">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="app.css?v=20261127-4">
+<link rel="stylesheet" href="app.css?v=20261127-5">
 </head>
 <body>
 <div id="root"></div>
@@ -17,79 +17,56 @@
 <script>
 (function(){
   var root=document.getElementById('root');
-  var PAGES={
-    home:['.flt-hero','.flt-stats','.flt-marquee'],
-    story:['.flt-story','.flt-why'],
-    trips:['.flt-trips','.flt-included'],
-    dahab:['.flt-dahab'],
-    how:['.flt-steps'],
-    contact:['.flt-contact']
-  };
-  var ID2PAGE={top:'home',story:'story',why:'story',trips:'trips',dahab:'dahab',how:'how',contact:'contact'};
   var TABS=[['home','top'],['story','story'],['trips','trips'],['dahab','dahab'],['how','how'],['contact','contact']];
-  var current=null;
   function flt(){return document.querySelector('.flt');}
-  function tag(page){
+  function closeMenu(){
+    var f=flt(); if(f) f.classList.remove('flt-menu-open');
+    var b=document.querySelector('.flt-burger'); if(b) b.setAttribute('aria-expanded','false');
+  }
+  function setNavH(){
+    var n=document.querySelector('.flt-nav');
+    if(n) document.documentElement.style.setProperty('--flt-navh',n.offsetHeight+'px');
+  }
+  function spy(){
     var f=flt(); if(!f) return;
-    f.classList.add('flt-pages');
-    Object.keys(PAGES).forEach(function(p){
-      PAGES[p].forEach(function(sel){
-        Array.prototype.forEach.call(document.querySelectorAll(sel),function(el){
-          if(el.getAttribute('data-page')!==p) el.setAttribute('data-page',p);
-          el.classList.toggle('flt-page-on',p===page);
-        });
-      });
+    var navh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--flt-navh'))||64;
+    var y=window.scrollY+navh+(window.innerWidth<=700?60:14);
+    var cur='home';
+    TABS.forEach(function(p){
+      if(p[0]==='home') return;
+      var el=document.getElementById(p[1]);
+      if(el&&el.getBoundingClientRect().top+window.scrollY<=y) cur=p[0];
+    });
+    var bar=f.querySelector('.flt-tabbar');
+    if(bar) Array.prototype.forEach.call(bar.querySelectorAll('.flt-tab'),function(b){
+      b.classList.toggle('is-current',b.getAttribute('data-tab')===cur);
     });
     var nav=document.querySelector('.flt-nav');
     if(nav) Array.prototype.forEach.call(nav.querySelectorAll('.flt-links a'),function(a){
       var h=a.getAttribute('href')||'';
       var id=h.charAt(0)==='#'?h.slice(1):'';
-      a.classList.toggle('is-current',ID2PAGE[id]===page);
+      a.classList.toggle('is-current',id===cur);
     });
-    var bar=f.querySelector('.flt-tabbar');
-    if(bar) Array.prototype.forEach.call(bar.querySelectorAll('.flt-tab'),function(b){
-      b.classList.toggle('is-current',b.getAttribute('data-tab')===page);
-    });
-    current=page;
   }
-  function show(page,anchor){
-    if(!anchor||!ID2PAGE[anchor]) anchor=null;
-    page=page||'home';
-    tag(page);
-    if(anchor&&ID2PAGE[anchor]===page&&anchor!=='top'){
-      var el=document.getElementById(anchor);
-      if(el){setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},80);return;}
-    }
-    window.scrollTo(0,0);
+  var ticking=false;
+  window.addEventListener('scroll',function(){
+    if(!ticking){ticking=true;requestAnimationFrame(function(){ticking=false;spy();});}
+  },{passive:true});
+  window.addEventListener('resize',function(){
+    setNavH();
+    if(window.innerWidth>700)closeMenu();
+    spy();
+  });
+  if(location.hash.indexOf('#/')===0){
+    var old=location.hash.slice(2);
+    if(document.getElementById(old)) history.replaceState(null,'','#'+old);
   }
-  function route(){
-    var h=location.hash.replace(/^#\/?/,'');
-    if(h&&ID2PAGE[h]) show(ID2PAGE[h],h); else show('home');
-  }
-  function closeMenu(){
-    var f=flt(); if(f) f.classList.remove('flt-menu-open');
-    var b=document.querySelector('.flt-burger'); if(b) b.setAttribute('aria-expanded','false');
-  }
-  window.addEventListener('hashchange',route);
   document.addEventListener('click',function(e){
     var t=e.target;
-    var a=t.closest?t.closest('.flt a[href^="#"]'):null;
-    if(a){
-      var id=(a.getAttribute('href')||'').slice(1);
-      if(ID2PAGE[id]){
-        e.preventDefault();
-        closeMenu();
-        var target='#/'+id;
-        if(location.hash===target) show(ID2PAGE[id],id);
-        else location.hash=target;
-        return;
-      }
-    }
     if(t.closest&&t.closest('.flt-links a')) closeMenu();
     else if(!t.closest||!t.closest('.flt-nav')) closeMenu();
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu();});
-  window.addEventListener('resize',function(){if(window.innerWidth>700)closeMenu();});
   function ensure(){
     var nav=document.querySelector('.flt-nav');
     if(nav){
@@ -143,7 +120,7 @@
       var bar=f2.querySelector('.flt-tabbar');
       if(!bar){
         bar=document.createElement('nav');
-        bar.className='flt-tabbar'; bar.setAttribute('aria-label','Pages');
+        bar.className='flt-tabbar'; bar.setAttribute('aria-label','Sections');
         TABS.forEach(function(tb){
           var btn=document.createElement('button');
           btn.type='button'; btn.className='flt-tab'; btn.setAttribute('data-tab',tb[0]);
@@ -159,9 +136,9 @@
           }
           btn.addEventListener('click',function(){
             closeMenu();
-            var id=tb[1], target='#/'+id;
-            if(location.hash===target) show(ID2PAGE[id],id);
-            else location.hash=target;
+            if(tb[0]==='home'){window.scrollTo({top:0,behavior:'smooth'});return;}
+            var el=document.getElementById(tb[1]);
+            if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
           });
           bar.appendChild(btn);
         });
@@ -177,7 +154,8 @@
         if(src&&sp.textContent!==src.textContent) sp.textContent=src.textContent;
       });
     }
-    if(flt()){ if(current) tag(current); else route(); }
+    setNavH();
+    spy();
   }
   new MutationObserver(ensure).observe(root,{childList:true,subtree:true});
   ensure();
